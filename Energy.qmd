@@ -148,3 +148,4 @@ fig1.show()
 ```{python}
 #| title: 3번 (시각화)
 fig3.show(config={'scrollZoom':False})
+```
