@@ -10,6 +10,7 @@ execute:
 ---
 
 ```{python}
+output: false
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -18,22 +19,22 @@ import plotly.io as pio
 pd.options.plotting.backend = "plotly"
 pio.templates.default = "plotly_white"
 
-df = pd.read_csv("https://raw.githubusercontent.com/guebin/DV2023/main/posts/NYCTaxi.csv")
-df_feature = df.assign(
-    log_trip_duration = np.log(df.trip_duration),
-    pickup_datetime = df.pickup_datetime.apply(pd.to_datetime),
-    dropoff_datetime = df.dropoff_datetime.apply(pd.to_datetime),
-    dist = np.sqrt((df.pickup_latitude-df.dropoff_latitude)**2 + (df.pickup_longitude-df.dropoff_longitude)**2),
+df = pd.read_csv("https://raw.githubusercontent.com/guebin/DV2023/main/posts/NYCTaxi.csv").assign(
+    log_trip_duration = lambda df: np.log(df.trip_duration),
+    pickup_datetime = lambda df: df.pickup_datetime.apply(pd.to_datetime),
+    dropoff_datetime = lambda df: df.dropoff_datetime.apply(pd.to_datetime),
+    dist = lambda df: np.sqrt((df.pickup_latitude-df.dropoff_latitude)**2 + (df.pickup_longitude-df.dropoff_longitude)**2),
     #---#
-    vendor_id = df.vendor_id.map({1:'A',2:'B'})
+    vendor_id = lambda df: df.vendor_id.map({1:'A',2:'B'})
 ).assign(
     speed = lambda df: df.dist / df.trip_duration,
     pickup_hour = lambda df: df.pickup_datetime.dt.hour,
     dropoff_hour = lambda df: df.dropoff_datetime.dt.hour,
     dayofweek = lambda df: df.pickup_datetime.dt.dayofweek
 )
+df_small = df[::100].reset_index(drop=True)
 
-tidydata = df_feature.pivot_table(
+tidydata = df.pivot_table(
     index = 'pickup_hour',
     columns = 'dayofweek',
     values = 'speed',
@@ -41,7 +42,6 @@ tidydata = df_feature.pivot_table(
 ).stack().reset_index().rename({0:'speed_mean'},axis=1)
 dct1={0:'월',1:'화',2:'수',3:'목',4:'금',5:'토',6:'일'}
 tidydata=tidydata.assign(dayofweek=tidydata.dayofweek.map(dct1))
-
 fig=px.density_heatmap(
     data_frame=tidydata,
     x='pickup_hour',
@@ -58,7 +58,7 @@ fig.update_layout(
     coloraxis_colorbar_title='평균속력'
 )
 
-tidydata1 = df_feature.pivot_table(
+tidydata1 = df.pivot_table(
     index = 'pickup_hour',
     columns = 'dayofweek',
     values = 'dist',
@@ -66,7 +66,6 @@ tidydata1 = df_feature.pivot_table(
 ).stack().reset_index().rename({0:'dist_mean'},axis=1)
 dct1={0:'월',1:'화',2:'수',3:'목',4:'금',5:'토',6:'일'}
 tidydata1=tidydata1.assign(dayofweek=tidydata1.dayofweek.map(dct1))
-
 fig1 = px.density_heatmap(
     data_frame=tidydata1,
     x='pickup_hour',
