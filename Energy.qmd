@@ -19,9 +19,6 @@ import pickle
 pd.options.plotting.backend = "plotly"
 pio.templates.default = "plotly_white"
 
-pd.options.plotting.backend = "plotly"
-pio.templates.default = "plotly_white"
-
 df = pd.read_csv("https://raw.githubusercontent.com/guebin/DV2023/main/posts/NYCTaxi.csv").assign(
     log_trip_duration = lambda df: np.log(df.trip_duration),
     pickup_datetime = lambda df: df.pickup_datetime.apply(pd.to_datetime),
