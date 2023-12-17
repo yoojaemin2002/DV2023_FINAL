@@ -86,33 +86,7 @@ fig1.update_layout(
 
 # 데이터탐색
 
-```{python}
-#| title: 에너지사용량 자료 
-import itables 
-itables.show(df2,showIndex=False)
-```
 
-# 시각화 {orientation="columns" scrolling="true"}
-
-## Column {width=50%}
-
-```{python}
-#| title: 2018년도 전기사용량 (전국)
-fig = px.choropleth_mapbox(
-    geojson = local_dict,
-    featureidkey = 'properties.code',
-    data_frame = df2.query('년도 == 2018'),
-    locations = 'code_local',
-    color = '에너지사용량(TOE)/전기',
-    hover_data = ['시도','지역'],
-    #---#
-    mapbox_style="carto-positron",
-    range_color = [0,200000],
-    center={"lat": 36, "lon": 127.5}, 
-    zoom=6,
-)
-fig.show(config={'scrollZoom':False})
-```
 
 ## Column {width=50%}
 
